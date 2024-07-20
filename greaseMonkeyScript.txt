@@ -1,0 +1,78 @@
+// ==UserScript==
+// @name         Add The Copy Code Button of ChatGpt To the bottom
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Add a bottom bar with a copy code button to code snippets
+// @author       Paul Preibisch
+// @match        *://*/*
+// @grant        MIT
+// ==/UserScript==
+
+(function() {
+    'use strict';
+
+    // Function to add the bottom bar with the copy button
+    function addCopyButtonToBottom(snippet) {
+        // Create the bottom bar div
+        const bottomBar = document.createElement('div');
+        bottomBar.style.display = 'flex';
+        bottomBar.style.justifyContent = 'flex-end';
+        bottomBar.style.padding = '4px';
+        bottomBar.style.backgroundColor = '#f0f0f0';
+        bottomBar.style.borderTop = '1px solid #ddd';
+        bottomBar.style.borderBottomLeftRadius = '4px';
+        bottomBar.style.borderBottomRightRadius = '4px';
+
+        // Create the copy button
+        const copyButton = document.createElement('button');
+        copyButton.textContent = 'Copy Code';
+        copyButton.style.margin = '0 4px';
+        copyButton.style.padding = '4px 8px';
+        copyButton.style.backgroundColor = '#4CAF50';
+        copyButton.style.color = 'white';
+        copyButton.style.border = 'none';
+        copyButton.style.borderRadius = '4px';
+        copyButton.style.cursor = 'pointer';
+
+        // Add click event to the copy button
+        copyButton.addEventListener('click', () => {
+            const codeText = snippet.querySelector('code').innerText;
+            navigator.clipboard.writeText(codeText).then(() => {
+                alert('Code copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy code: ', err);
+            });
+        });
+
+        // Append the copy button to the bottom bar
+        bottomBar.appendChild(copyButton);
+
+        // Append the bottom bar to the snippet
+        snippet.appendChild(bottomBar);
+    }
+
+    // Add copy button to all code snippets on the page
+    document.querySelectorAll('pre').forEach(snippet => {
+        addCopyButtonToBottom(snippet);
+    });
+
+    // Observe for dynamically added code snippets and add copy buttons to them
+    const observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            if (mutation.addedNodes.length > 0) {
+                mutation.addedNodes.forEach(node => {
+                    if (node.nodeName === 'PRE') {
+                        addCopyButtonToBottom(node);
+                    } else if (node.nodeType === Node.ELEMENT_NODE) {
+                        node.querySelectorAll('pre').forEach(snippet => {
+                            addCopyButtonToBottom(snippet);
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+
+})();
