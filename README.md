@@ -1,2 +1,5 @@
-# grease_monkey_add_copy_button_at_bottom_grease_monkey
-Adds a Copy Code button at the bottom of ChatGpt Snippet Window
+## Instructions:
+Install Grease Monkey Addon to Firefox or Chrome
+Copy this script as a new user Script.
+Enjoy!
+
